@@ -31,6 +31,22 @@ describe "Static pages" do
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
+
+      it "should have the number of microposts" do
+        (user.microposts.count == 1) ? (it_should have_content('1 micropost')) :
+         (page.should have_content("#{user.microposts.count} microposts"))
+      end
+
+      describe "follower/following counts" do
+        let(:other_user) { FactoryGirl.create(:user) }
+        before do
+          other_user.follow!(user)
+          visit root_path
+        end
+
+        it { should have_link("0 following", href: following_user_path(user)) }
+        it { should have_link("1 followers", href: followers_user_path(user)) }
+      end
     end
   end
 
